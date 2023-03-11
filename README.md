@@ -20,4 +20,4 @@ npm run build
 npm run lint
 ```
 
-### vscode git
+### vscode for git
