@@ -8,7 +8,23 @@ const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: Login },
   // { path: '/login', component: () => import('../components/Login.vue') },
-  { path: '/home', component: () => import('../views/HomeView.vue') },
+  {
+    path: '/home',
+    name: 'home',
+    component: () => import('../views/HomeView.vue'),
+    children: [
+      { path: '/', component: () => import('../components/Welcome.vue') },
+      { path: '/users', component: () => import('../components/user/Users.vue') },
+      { path: '/rights', component: () => import('../components/right/Rights.vue') },
+      { path: '/roles', component: () => import('../components/right/Roles.vue') },
+      { path: '/goods', component: () => import('../components/good/Goods.vue') },
+      { path: '/params', component: () => import('../components/good/Params.vue') },
+      { path: '/categories', component: () => import('../components/good/Categories.vue') },
+      { path: '/orders', component: () => import('../components/order/Orders.vue') },
+      { path: '/reports', component: () => import('../components/data/Reports.vue') },
+
+    ]
+  },
   {
     path: '/about',
     name: 'about',
@@ -27,7 +43,7 @@ router.beforeEach((to, from, next) => {
   }
   const token = window.sessionStorage.getItem('token')
   if (!token) {
-      return next('/login')
+    return next('/login')
   }
   next()
 })

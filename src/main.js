@@ -8,9 +8,9 @@ Vue.use(ElementUI);
 // 引入全局样式
 import './assets/global.css'
 
-import axios from 'axios'
-axios.defaults.baseURL = 'https://lianghj.top:8888/api/private/v1/'
-Vue.prototype.$http = axios
+import service from './service.js'
+
+Vue.prototype.$http = service
 
 Vue.config.productionTip = false
 

@@ -10,7 +10,7 @@
                 </el-form-item>
                 <el-form-item prop="password">
                     <el-input v-model="loginForm.password" placeholder="请输入密码" prefix-icon="el-icon-lock"
-                        show-password></el-input>
+                        show-password @keyup.enter.native="login"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="login">提交</el-button>
@@ -22,6 +22,7 @@
 </template>
 
 <script>
+import { login } from '@/api/api';
 export default {
     name: 'Login',
     data() {
@@ -51,12 +52,14 @@ export default {
             this.$refs.loginForm.resetFields()
         },
         login() {
+            console.log('login()');
             this.$refs.loginForm.validate(async valid => {
                 if (!valid) return
-                const { data: res } = await this.$http.post('login', this.loginForm)
 
+                const res = await login(this.loginForm)
+                console.log(res);
                 if (res.meta.status !== 200) {
-                    return this.$message.error('登陆失败！' + res.meta.msg)
+                    return
                 }
                 this.$message.success('登录成功!')
                 window.sessionStorage.setItem('token',res.data.token)
