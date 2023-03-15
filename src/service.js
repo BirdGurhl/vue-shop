@@ -18,7 +18,7 @@ service.interceptors.request.use(config => {
 // 响应拦截器
 service.interceptors.response.use(response => {
     // Do something before response is sent
-    if (response.data.meta.status !== 200) {
+    if (response.data.meta.status !== 200 && response.data.meta.status !== 201) {
         Message.error(response.data.meta.msg || 'error')
     }
     return response;

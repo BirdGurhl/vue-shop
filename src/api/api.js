@@ -47,4 +47,59 @@ export async function delUser(user) {
     return data
 }
 
+// 获取权限列表
+export async function getRightList(type) {
+    let { data } = await service.get(`rights/${type}`)
+    return data
+}
 
+// 获取角色列表
+export async function getRoleList() {
+    let { data } = await service.get(`roles`)
+    return data
+}
+
+// 添加角色
+export async function addRole(roleInfo) {
+    let { data } = await service.post(`roles`,roleInfo)
+    return data
+}
+
+// 修改角色信息
+export async function roleInfoChange(roleInfo) {
+    let { data } = await service({
+        method:'put',
+        url:`roles/${roleInfo.id}`,
+        data:{
+            roleName:roleInfo.roleName,
+            roleDesc:roleInfo.roleDesc
+        }
+    })
+    return data
+}
+
+// 删除角色
+export async function delRole(roleInfo) {
+    let { data } = await service.delete(`roles/${roleInfo.id}`)
+    return data
+}
+
+// 删除角色权限
+export async function delRight(roleID,rightID) {
+    let { data } = await service.delete(`roles/${roleID}/rights/${rightID}`)
+    return data
+}
+assignRight
+// 角色授权
+export async function assignRight(roleId,rids) {
+    let { data } = await service.post(`roles/${roleId}/rights`,{rids})
+    // let { data } = await service({
+    //     method:'post',
+    //     url:`roles/${roleId}/rights`,
+    //     data:{
+    //         rids
+    //     }
+    // })
+    console.log(data);
+    return data
+}

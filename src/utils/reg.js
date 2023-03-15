@@ -20,7 +20,7 @@ export const checkName = [
 
 export const checkPassword = [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, max: 115, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+    { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
 ]
 export const checkPhone = [
     { required: true, message: '请输入手机号码', trigger: 'blur' },
@@ -29,5 +29,12 @@ export const checkPhone = [
 export const checkEmail = [
     { required: true, message: '请输入邮箱', trigger: 'blur' },
     { validator: checkEmailReg, trigger: 'blur' }
+]
+export const checkroleName = [
+    { required: true, message: '请输入角色名称', trigger: 'blur' },
+]
+export const checkroleDesc = [
+    { required: true, message: '请输入角色描述', trigger: 'blur' },
+
 ]
 

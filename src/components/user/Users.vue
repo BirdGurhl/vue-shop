@@ -1,7 +1,7 @@
 <template>
   <div class='Users-container'>
     <!-- 导航 -->
-    <el-breadcrumb separator-class="el-icon-arrow-right">
+    <el-breadcrumb>
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
       <el-breadcrumb-item>用户管理</el-breadcrumb-item>
       <el-breadcrumb-item>用户列表</el-breadcrumb-item>
@@ -102,7 +102,7 @@ export default {
   mounted() { },
   methods: {
     deleteUser(user) {
-      this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -130,7 +130,6 @@ export default {
         return
       }
       this.$message.success('修改成功')
-      this.editDialogVisible = false
       this.getUsersList();
     },
     async addUser() {
@@ -139,7 +138,6 @@ export default {
         return
       }
       this.$message.success('添加成功')
-      this.addDialogVisible = false
       this.getUsersList();
     },
     // 每页显示条目数量改变时调用

@@ -18,7 +18,7 @@
               <i :class="menuIconList[menu.id]"></i>
               <span>{{ menu.authName }}</span>
             </template>
-            <el-menu-item v-for="subMenu in menu.children" :key="subMenu.id" :index="subMenu.path">
+            <el-menu-item v-for="subMenu in menu.children" :key="subMenu.id" :index="subMenu.path" >
               <span slot="title">{{ subMenu.authName }}</span>
             </el-menu-item>
           </el-submenu>
@@ -54,6 +54,9 @@ export default {
     asideWidth() {
       return this.isCollapse ? '60px' : '200px'
     },
+    activePath(){
+      return ''
+    }
   },
   components: {
   },
@@ -68,16 +71,19 @@ export default {
     async getMenuList() {
       const res = await getMenuList()
       if (res.meta.status != 200) {
-        return this.$message.error(res.meta.msg)
+        return
       }
       this.menuList = res.data
       // console.log(res);
     }
-  }
+  },
 }
 </script>
 
 <style lang="less" scoped>
+/deep/ .el-breadcrumb {
+  margin-bottom: 15px;
+}
 .el-container {
   color: white;
   height: 100%;
