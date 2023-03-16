@@ -52,12 +52,10 @@ export default {
             this.$refs.loginForm.resetFields()
         },
         login() {
-            console.log('login()');
             this.$refs.loginForm.validate(async valid => {
                 if (!valid) return
 
                 const res = await login(this.loginForm)
-                console.log(res);
                 if (res.meta.status !== 200) {
                     return
                 }

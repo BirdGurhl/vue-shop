@@ -47,6 +47,12 @@ export async function delUser(user) {
     return data
 }
 
+// 删除用户
+export async function getUserInfo(user) {
+    let { data } = await service.get(`users/${user.id}`)
+    return data
+}
+
 // 获取权限列表
 export async function getRightList(type) {
     let { data } = await service.get(`rights/${type}`)
@@ -101,5 +107,41 @@ export async function assignRight(roleId,rids) {
     //     }
     // })
     console.log(data);
+    return data
+}
+
+// 分类用户角色
+export async function assignUserRole(uid,rid) {
+    let { data } = await service.put(`users/${uid}/role`,{rid})
+    return data
+}
+
+// 获取商品分类数据
+export async function getCategories(params) {
+    let { data } = await service({
+        method:'get',
+        url:'categories',
+        params:params
+    })
+    return data
+}
+// 添加分类
+export async function addCategories(params) {
+    let { data } = await service({
+        method:'post',
+        url:'categories',
+        'data':params
+    })
+    return data
+}
+// 修改分类
+export async function editCategories(cat_id,cat_name) {
+    let { data } = await service.put(`categories/${cat_id}`,{cat_name})
+    console.log(data);
+    return data
+}
+// 删除分类
+export async function delCategories(id) {
+    let { data } = await service.delete(`categories/${id}`)
     return data
 }

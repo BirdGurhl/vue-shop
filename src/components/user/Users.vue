@@ -17,7 +17,7 @@
         </el-input>
       </el-col>
       <el-col :span="3">
-        <el-button type="primary" @click="addDialogVisible = true">添加用户</el-button>
+        <el-button type="primary" @click="addUserBtn">添加用户</el-button>
       </el-col>
     </el-row>
     <!-- 添加用户弹出框 -->
@@ -47,14 +47,22 @@
             <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteUser(scope.row)"></el-button>
           </el-tooltip>
           <el-tooltip effect="dark" content="分配角色" placement="top">
-            <el-button type="warning" icon="el-icon-s-tools" size="mini"></el-button>
+            <el-button type="warning" icon="el-icon-s-tools" size="mini" @click="assignRoleBtn(scope.row)"></el-button>
           </el-tooltip>
         </template>
       </el-table-column>
     </el-table>
+    <!-- 表格数据end -->
+    <!-- 修改用户信息弹出框 -->
     <Dialog :title="'修改用户信息'" :dialogVisibleModel.sync="editDialogVisible" :formDataModel.sync="UserInfo"
       :callback="changeUserInfo"></Dialog>
-    <!-- 表格数据end -->
+    <!-- 修改用户信息弹出框end -->
+    <!-- 分配角色弹出框 -->
+    <Dialog :title="'分配角色'" :dialogVisibleModel.sync="assighDialogVisible" :formDataModel.sync="UserInfo"
+      :callback="assignRole"></Dialog>
+    <!-- 分配角色弹出框end -->
+
+    
 
 
     <!-- 分页区 -->
@@ -68,7 +76,7 @@
 </template>
 
 <script>
-import { addUser, userStageChange, getUsersList, userInfoChange, delUser } from '@/api/api'
+import { addUser, userStageChange, getUsersList, userInfoChange, delUser,getUserInfo,assignUserRole} from '@/api/api'
 import Dialog from './Dialog.vue'
 export default {
   name: 'Users',
@@ -84,6 +92,7 @@ export default {
       total: 0,
       addDialogVisible: false,
       editDialogVisible: false,
+      assighDialogVisible:false,
       UserInfo: {
         username: '',
         password: '',
@@ -101,6 +110,26 @@ export default {
   },
   mounted() { },
   methods: {
+    async assignRoleBtn(user){
+      const res = await getUserInfo(user)
+      if (res.meta.status != 200) {
+        return
+      }
+      this.UserInfo = {
+        id:user.id,
+        role_id:res.data.rid,
+        username:user.username
+      }
+      this.assighDialogVisible = true
+    },
+    async assignRole(){
+      const res = await assignUserRole(this.UserInfo.id,this.UserInfo.role_id)
+      if (res.meta.status != 200) {
+        return
+      }
+      this.$message.success('成功')
+      this.getUsersList()
+    },
     deleteUser(user) {
       this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -129,8 +158,17 @@ export default {
       if (res.meta.status != 200) {
         return
       }
-      this.$message.success('修改成功')
+      this.$message.success('用户状态已修改')
       this.getUsersList();
+    },
+    addUserBtn(){
+      this.UserInfo={
+        username: '',
+        password: '',
+        email: '',
+        mobile: '',
+      },
+      addDialogVisible = true
     },
     async addUser() {
       const res = await addUser(this.UserInfo)

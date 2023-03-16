@@ -50,7 +50,6 @@ export default {
         return
       }
       this.rightList = res.data
-      console.log(this.rightList);
     }
   }
 }
