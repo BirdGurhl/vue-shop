@@ -20,10 +20,12 @@
       <!-- 表格标签 -->
       <el-tabs value="many" @tab-click="handleClick">
         <el-tab-pane label="动态参数" name="many">
-          <params-table :title="'many'" :SelectCategoriesListModel.sync="selectCatAttributes" :getParamsList="getParamsList" :addBtnAble="addBtnAble" :catid="catid"></params-table>
+          <params-table :title="'many'" :SelectCategoriesListModel.sync="selectCatAttributes"
+            :getParamsList="getParamsList" :addBtnAble="addBtnAble" :catid="catid"></params-table>
         </el-tab-pane>
         <el-tab-pane label="静态属性" name="only">
-          <params-table :title="'only'" :SelectCategoriesListModel.sync="selectCatAttributes" :getParamsList="getParamsList"></params-table>
+          <params-table :title="'only'" :SelectCategoriesListModel.sync="selectCatAttributes"
+            :getParamsList="getParamsList" :addBtnAble="addBtnAble" :catid="catid"></params-table>
         </el-tab-pane>
 
       </el-tabs>
@@ -55,8 +57,8 @@ export default {
       activeName: {
         sel: 'many'
       },
-      addBtnAble:false,
-      catid:0
+      addBtnAble: false,
+      catid: 0
     }
   },
   computed: {
@@ -77,17 +79,16 @@ export default {
 
     handleClick(tab, event) {
       // 如果点击的是已经在展示中的tab,结束
-      if(this.activeName.sel == tab.name) return
+      if (this.activeName.sel == tab.name) return
       this.activeName.sel = tab.name
       // 获取表格数据
       this.getParamsList()
     },
     // 获取表格数据
-    async getParamsList(){
+    async getParamsList() {
       // 如果还没选择分类
-      this.addBtnAble = true
       if (this.selectCatIdArr.length <= 0) return
-
+      this.addBtnAble = true
       let length = this.selectCatIdArr.length
       let id = this.selectCatIdArr[length - 1]
       this.catid = id
@@ -97,16 +98,25 @@ export default {
       }
       // 如果时动态参数,切割分类参数
       if (this.activeName.sel == 'many') {
-        res.data.map((item, index, arr) => {
+        this.selectCatAttributes = res.data.filter((item, index, arr) => {
+          // 如果为空
+          if (!item.attr_vals) return false
           arr[index].attr_vals = item.attr_vals.trim()
           // 如果以逗号结尾
           if (arr[index].attr_vals.endsWith(',') || arr[index].attr_vals.endsWith(',')) {
             arr[index].attr_vals = arr[index].attr_vals.slice(0, -1)
           }
           arr[index].attr_vals = item.attr_vals.split(/,|，/)
+          return true
+        })
+      } else {
+        this.selectCatAttributes = res.data.filter((item, index, arr) => {
+          // 如果为空
+          if (!item.attr_vals) return false
+          return true
         })
       }
-      this.selectCatAttributes = res.data
+
     },
 
     async getAllCategories() {
@@ -141,6 +151,4 @@ export default {
   display: flex;
   align-items: center;
 }
-
-
 </style>

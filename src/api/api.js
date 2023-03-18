@@ -152,7 +152,6 @@ export async function getParamsList(id, sel) {
         url: `categories/${id}/attributes`,
         params: sel
     })
-    console.log(data);
     return data
 }
 // 删除分类参数
@@ -184,6 +183,25 @@ export async function editParams(params) {
             attr_vals: params.attr_vals
         }
     })
-    console.log(data);
+    return data
+}
+
+// 获取商品列表数据
+export async function getGoods(params){
+    let {data} = await service({
+        method: 'get',
+        url: `goods`,
+        params: params
+    })
+    return data
+}
+// 删除商品
+export async function delGoods(id){
+    let { data } = await service.delete(`goods/${id}`)
+    return data
+}
+// 添加商品
+export async function addGoods(params){
+    let {data} = await service.post('goods',params)
     return data
 }

@@ -16,17 +16,24 @@
             :callback="editCategories">
         </params-dialog>
         <!-- 表格数据 -->
-        <el-table :data="selectCatAttributes" style="width: 100%" border stripe>
+        <el-table :data="selectCatAttributes" style="width: 100%" border stripe row-key="attr_id">
 
             <el-table-column type="expand">
                 <template v-slot="scope">
-                    <el-tag v-if="title === 'only'">
+                    <el-tag v-if="title === 'only' && scope.row.attr_vals">
                         {{ scope.row.attr_vals }}
                     </el-tag>
-                    <el-tag v-if="title === 'many'" :key="tag" v-for="tag in scope.row.attr_vals" closable
+                    <el-tag v-if="title === 'many' && tag" :key="tag" v-for="tag in scope.row.attr_vals" closable
                         :disable-transitions="false" @close="delTag(tag, scope.row)">
                         {{ tag }}
                     </el-tag>
+                    <template v-if="title === 'many'">
+                        <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput"
+                            size="small" @keyup.enter.native="handleInputConfirm(scope.row)"
+                            @blur="handleInputConfirm(scope.row)">
+                        </el-input>
+                        <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+                    </template>
                 </template>
             </el-table-column>
             <el-table-column type="index" label="#"></el-table-column>
@@ -57,10 +64,12 @@ export default {
                 attr_name: '',
                 attr_sel: '',
                 attr_vals: '',
-            }
+            },
+            inputVisible: false,
+            inputValue: ''
         }
     },
-    props: ['title', 'SelectCategoriesListModel', 'getParamsList','addBtnAble','catid'],
+    props: ['title', 'SelectCategoriesListModel', 'getParamsList', 'addBtnAble', 'catid'],
     computed: {
         selectCatAttributes: {
             get() { return this.SelectCategoriesListModel },
@@ -75,18 +84,40 @@ export default {
     },
     mounted() { },
     methods: {
+        handleInputConfirm(row) {
+
+            let inputValue = this.inputValue;
+            if (!inputValue) {
+                this.inputVisible = false;
+                this.inputValue = '';
+                return
+            }
+            row.attr_vals.push(inputValue);
+            this.inputVisible = false;
+            this.inputValue = '';
+            // 深拷贝
+            this.formData = JSON.parse(JSON.stringify(row))
+            // 转换字符串
+            this.formData.attr_vals = this.formData.attr_vals.join(',')
+            console.log(this.formData);
+            this.editCategories()
+        },
+        showInput() {
+            this.inputVisible = true;
+            this.$nextTick(_ => {
+                this.$refs.saveTagInput.$refs.input.focus();
+            });
+        },
         // 点击标签的小叉叉
         delTag(tag, row) {
+            // 删去叉掉的那个
+            row.attr_vals.splice(row.attr_vals.indexOf(tag), 1)
             // 深拷贝
             this.formData = JSON.parse(JSON.stringify(row))
             // 截去叉掉的那个
             if (this.formData.attr_sel == 'many') {
                 // 转换字符串
-                this.formData.attr_vals.splice(this.formData.attr_vals.indexOf(tag), 1)
                 this.formData.attr_vals = this.formData.attr_vals.join(',')
-            }
-            else {
-                this.formData.attr_vals = undefined
             }
             console.log(this.formData);
             this.editCategories()
@@ -162,5 +193,8 @@ export default {
 
 .el-tag {
     margin: 5px;
+}
+.input-new-tag{
+    width: fit-content;
 }
 </style>

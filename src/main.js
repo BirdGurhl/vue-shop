@@ -9,8 +9,8 @@ Vue.use(ElementUI);
 import './assets/global.css'
 
 import service from './service.js'
-
 Vue.prototype.$http = service
+
 
 Vue.config.productionTip = false
 
