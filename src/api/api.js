@@ -236,7 +236,11 @@ export async function getOrders(params){
 // 查看物流信息
 export async function getKuaidi(params){
     let {data} = await service.get(`/kuaidi/804909574412544580`)
+    return data
+}
+// 获取报表数据
+export async function getReportData(params){
+    let {data} = await service.get(`reports/type/1`)
     console.log(data);
     return data
 }
-
