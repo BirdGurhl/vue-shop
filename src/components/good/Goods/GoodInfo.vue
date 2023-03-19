@@ -1,12 +1,12 @@
 <template>
-    <div class='AddGood'>
+    <div class='GoodInfo'>
         <el-breadcrumb>
             <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
             <el-breadcrumb-item>商品管理</el-breadcrumb-item>
             <el-breadcrumb-item>添加商品</el-breadcrumb-item>
         </el-breadcrumb>
         <el-card>
-            <el-alert title="添加商品信息" type="info" show-icon></el-alert>
+            <el-alert :title="title" type="info" show-icon center></el-alert>
             <el-steps :active="activeIndex - 0" finish-status="success" align-center>
                 <el-step title="基本信息"></el-step>
                 <el-step title="商品参数"></el-step>
@@ -27,7 +27,7 @@
                         <el-form-item label="数量" prop="goods_number">
                             <el-input v-model="addForm.goods_number" type="number"></el-input>
                         </el-form-item>
-                        <el-form-item label="重量" prop="goods_weight">
+                        <el-form-item label="重量（kg）" prop="goods_weight">
                             <el-input v-model="addForm.goods_weight" type="number"></el-input>
                         </el-form-item>
                         <el-form-item label="分类" prop="goods_cat">
@@ -38,7 +38,7 @@
 
                     <el-tab-pane label="商品参数" name="1">
                         <el-form-item v-for="(params, index) in paramsList" :key="params.attr_id" :label="params.attr_name">
-                            <el-checkbox-group v-model="params.attr_vals">
+                            <el-checkbox-group v-model="manyParamsModel[index].attr_vals">
                                 <el-checkbox v-for="(item, index) in params.attr_vals" :key="index" :label="item"
                                     border></el-checkbox>
                             </el-checkbox-group>
@@ -47,13 +47,13 @@
                     <el-tab-pane label="商品属性" name="2">
                         <el-form-item v-for="(params, index) in onlyParamsList" :key="params.attr_id"
                             :label="params.attr_name">
-                            <el-input v-model="params.attr_vals"></el-input>
+                            <el-input v-model="onlyParamsModel[index].attr_vals"></el-input>
                         </el-form-item>
                     </el-tab-pane>
 
                     <el-tab-pane label="商品图片" name="3">
                         <el-upload :action="uploadURL" :on-preview="handlePreview" :on-remove="handleRemove"
-                            :on-success="handleSuccess" list-type="picture" :headers="headerObj">
+                            :file-list="fileList" :on-success="handleSuccess" list-type="picture" :headers="headerObj">
                             <el-button size="small" type="primary">点击上传</el-button>
                             <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
                         </el-upload>
@@ -63,7 +63,7 @@
                         <!-- 富文本编辑器 -->
                         <quill-editor v-model="addForm.goods_introduce">
                         </quill-editor>
-                        <el-button type="primary" class="addBtn" @click="addBtn">添加商品</el-button>
+                        <el-button type="primary" class="addBtn" @click="addBtn">完成</el-button>
                     </el-tab-pane>
                 </el-tabs>
             </el-form>
@@ -85,9 +85,9 @@ import 'quill/dist/quill.bubble.css'
 import { quillEditor } from 'vue-quill-editor'
 
 import service from '@/service'
-import { getCategories, getParamsList, addGoods } from '@/api/api'
+import { getCategories, getParamsList, addGoods, editGoods } from '@/api/api'
 export default {
-    name: 'AddGood',
+    name: 'GoodInfo',
     data() {
         return {
             activeIndex: '0',
@@ -117,25 +117,51 @@ export default {
             },
             paramsList: [],
             paramsListFlag: false,
+            manyParamsModel: [],
             onlyParamsList: [],
             onlyParamsListFlag: false,
+            onlyParamsModel: [],
             // uploadURL: $http.defaults.baseURL + '/upload'
             headerObj: {
                 Authorization: window.sessionStorage.getItem('token')
             },
             priviewPath: '',
+            fileList: [],
             dialogVisible: false
         }
     },
     computed: {
         catid() { return this.addForm.goods_cat[this.addForm.goods_cat.length - 1] },
-        uploadURL() { return service.defaults.baseURL + 'upload' }
+        uploadURL() { return service.defaults.baseURL + 'upload' },
+        isAddGood() { return !Boolean(this.$route.query.goodInfo) },
+        isEditGood() { return Boolean(this.$route.query.goodInfo) },
+        title() { return this.isAddGood ? '添加商品信息' : '编辑商品信息' }
     },
+
     components: {
         quillEditor
     },
     created() {
         this.getAllCategories()
+        if (this.isEditGood) {
+            this.addForm = JSON.parse(this.$route.query.goodInfo)
+            // 写入分类参数
+            this.addForm.goods_cat = [this.addForm.cat_one_id, this.addForm.cat_two_id, this.addForm.cat_three_id]
+            // 写入商品参数/属性
+            this.getParamsList('many').then((result) => {
+                this.getParamsList('only')
+            }).then((result) => {
+                this.init()
+                console.log(this.addForm);
+                console.log(this.fileList);
+                console.log(this.manyParamsModel);
+                console.log(this.onlyParamsModel);
+            }).catch((err) => {
+                this.$message.error(err)
+                this.$router.back()
+            });
+        }
+
     },
     mounted() { },
     methods: {
@@ -160,7 +186,7 @@ export default {
             // ]
             formData.attrs = []
             // 动态参数
-            this.paramsList.forEach((attr, index, arr) => {
+            this.manyParamsModel.forEach((attr, index, arr) => {
                 if (attr.attr_vals.length == 0) {
                     // console.log('false');
                     return
@@ -172,7 +198,7 @@ export default {
                 formData.attrs.push(arrrInfo)
             })
             // 静态属性
-            this.onlyParamsList.forEach((attr, index, arr) => {
+            this.onlyParamsModel.forEach((attr, index, arr) => {
                 if (!attr.attr_vals) {
                     // console.log('false');
                     return
@@ -184,12 +210,20 @@ export default {
                 formData.attrs.push(arrrInfo)
             })
             console.log(formData);
-            const res = await addGoods(formData)
-            if (res.meta.status != 201) {
-                return
+            if (this.isAddGood) {
+                const res = await addGoods(formData)
+                if (res.meta.status != 201) {
+                    return
+                }
+                console.log(res);
+            } else if (this.isEditGood) {
+                const res = await editGoods(formData)
+                if (res.meta.status != 201) {
+                    return
+                }
+                console.log(res);
             }
-            console.log(res);
-            this.$message.success('添加成功')
+            this.$message.success('成功')
             this.$router.push('/goods')
         },
         // 上传图片
@@ -200,6 +234,7 @@ export default {
         handleRemove(file, fileList) {
             let path = file.response.data.tmp_path
             this.addForm.pics.splice(this.addForm.pics.indexOf(path), 1)
+            console.log(this.addForm);
         },
         // 上传图片预览
         handlePreview(file) {
@@ -244,10 +279,10 @@ export default {
         // 获取商品参数列表
         async getParamsList(sel) {
             // 如果还没选择分类
-            if (this.addForm.goods_cat.length <= 0) return
+            if (this.addForm.goods_cat.length <= 0) return Promise.resolve()
             const res = await getParamsList(this.catid, { sel })
             if (res.meta.status != 200) {
-                return
+                return Promise.reject()
             }
             // 如果时动态参数,切割分类参数
             if (sel == 'many') {
@@ -262,16 +297,36 @@ export default {
                     arr[index].attr_vals = item.attr_vals.split(/,|，/)
                     return true
                 })
+                this.paramsList.forEach((attr, index, arr) => {
+                    if (attr.attr_vals.length == 0) {
+                        return
+                    }
+                    const arrrInfo = {
+                        attr_id: attr.attr_id,
+                        attr_vals: this.isAddGood ? [...attr.attr_vals] : []
+                    }
+                    this.manyParamsModel.push(arrrInfo)
+                })
+                console.log(this.manyParamsModel);
                 this.paramsListFlag = true
             }
             if (sel == 'only') {
                 this.onlyParamsList = res.data.filter((item, index, arr) => {
                     // 如果为空
-                    if (!item.attr_vals) return false
+                    // if (!item.attr_vals) return false
                     return true
                 })
+                this.onlyParamsList.forEach((attr, index, arr) => {
+                    const arrrInfo = {
+                        attr_id: attr.attr_id,
+                        attr_vals: this.isAddGood ? attr.attr_vals.trim() : ''
+                    }
+                    this.onlyParamsModel.push(arrrInfo)
+                })
+                console.log(this.onlyParamsModel);
                 this.onlyParamsListFlag = true
             }
+            return Promise.resolve()
         },
         // 获取分类列表
         async getAllCategories() {
@@ -281,6 +336,67 @@ export default {
             }
             this.SelectCategoriesList = res.data
         },
+        init() {
+
+            console.log(JSON.parse(this.$route.query.goodInfo));
+            this.addForm.attrs.forEach((item, index, arr) => {
+                if (item.attr_sel == 'many') {
+                    // 商品参数
+                    if (!item.attr_vals) return
+                    arr[index].attr_vals = item.attr_vals.trim()
+                    // 如果以逗号结尾
+                    if (arr[index].attr_vals.endsWith(',') || arr[index].attr_vals.endsWith(',')) {
+                        arr[index].attr_vals = arr[index].attr_vals.slice(0, -1)
+                    }
+                    arr[index].attr_vals = item.attr_vals.split(/,|，/)
+
+                    const arrrInfo = {
+                        attr_id: item.attr_id,
+                        attr_vals: [...arr[index].attr_vals]
+                    }
+                    let flag = this.manyParamsModel.some((element, index, arr) => {
+                        if (element.attr_id == arrrInfo.attr_id) {
+                            arr[index].attr_vals = arrrInfo.attr_vals
+                            console.log(arr[index].attr_vals)
+                            return true
+                        }
+                        return false
+                    })
+                    if (!flag) {
+                        this.manyParamsModel.push(arrrInfo)
+                    }
+                } else if (item.attr_sel == 'only') {
+                    // 商品属性
+                    const arrrInfo = {
+                        attr_id: item.attr_id,
+                        attr_vals: item.attr_vals
+                    }
+                    let flag = this.onlyParamsModel.some((element, index, arr) => {
+                        if (element.attr_id == arrrInfo.attr_id) {
+                            arr[index].attr_vals = arrrInfo.attr_vals
+                            console.log(arr[index].attr_vals)
+                            return true
+                        }
+                        return false
+                    })
+                    if (!flag) {
+                        this.onlyParamsModel.push(arrrInfo)
+                    }
+                }
+
+            })
+            // console.log(this.manyParamsModel);
+            // console.log(this.onlyParamsModel);
+            // 写入商品图片
+            this.addForm.pics.forEach((item, index, arr) => {
+                this.fileList.push({
+                    name: index + '.jpg',
+                    url: item.pics_big_url
+                })
+                arr[index] = { pic: item.pics_big_url }
+            })
+
+        }
     }
 }
 </script>

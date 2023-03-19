@@ -20,7 +20,7 @@ const routes = [
       { path: '/goods', component: () => import('../components/good/Goods.vue') },
       { path: '/params', component: () => import('../components/good/Params.vue') },
       { path: '/categories', component: () => import('../components/good/Categories.vue') },
-      { path: '/addgood', component: () => import('../components/good/Goods/AddGood.vue') },
+      { path: '/goodinfo',name:'goodinfo', component: () => import('../components/good/Goods/GoodInfo.vue') },
       { path: '/orders', component: () => import('../components/order/Orders.vue') },
       { path: '/reports', component: () => import('../components/data/Reports.vue') },
 

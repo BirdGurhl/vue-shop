@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { getGoods, delGoods } from '@/api/api'
+import { getGoods, delGoods,getGoodsByID } from '@/api/api'
 export default {
   name: 'Goods',
   data() {
@@ -79,18 +79,18 @@ export default {
       goodList: []
     }
   },
-  filters: {
-    dateFormat(date) {
-      const dt = new Date(date)
-      const y = dt.getFullYear()
-      const m = (dt.getMonth() + 1 + '').padStart(2, '0')
-      const d = (dt.getDate() + '').padStart(2, '0')
-      const hh = (dt.getHours() + '').padStart(2, '0')
-      const mm = (dt.getMinutes() + '').padStart(2, '0')
-      const ss = (dt.getSeconds() + '').padStart(2, '0')
-      return `${y}-${m}-${d} ${hh}:${mm}`
-    }
-  },
+  // filters: {
+  //   dateFormat(date) {
+  //     const dt = new Date(date)
+  //     const y = dt.getFullYear()
+  //     const m = (dt.getMonth() + 1 + '').padStart(2, '0')
+  //     const d = (dt.getDate() + '').padStart(2, '0')
+  //     const hh = (dt.getHours() + '').padStart(2, '0')
+  //     const mm = (dt.getMinutes() + '').padStart(2, '0')
+  //     const ss = (dt.getSeconds() + '').padStart(2, '0')
+  //     return `${y}-${m}-${d} ${hh}:${mm}`
+  //   }
+  // },
   computed: {},
   components: {},
   created() {
@@ -99,10 +99,22 @@ export default {
   mounted() { },
   methods: {
     addUserBtn() {
-      this.$router.push('/addgood')
+      this.$router.push('/goodinfo')
      },
-    editGoodBtn(row) {
+    async editGoodBtn(row) {
       console.log(row);
+      // 获取需要编辑商品的完整信息
+      const res = await getGoodsByID(row.goods_id)
+      if (res.meta.status != 200) {
+        return
+      }
+      console.log(res);
+      this.$router.push({
+        name:'goodinfo',
+        query:{
+          goodInfo:JSON.stringify(res.data)
+        }
+      })
     },
     // 删除商品
     delGoods(row) {

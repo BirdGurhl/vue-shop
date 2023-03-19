@@ -137,7 +137,6 @@ export async function addCategories(params) {
 // 修改分类
 export async function editCategories(cat_id, cat_name) {
     let { data } = await service.put(`categories/${cat_id}`, { cat_name })
-    console.log(data);
     return data
 }
 // 删除分类
@@ -205,3 +204,39 @@ export async function addGoods(params){
     let {data} = await service.post('goods',params)
     return data
 }
+// 根据 ID 查询商品
+export async function getGoodsByID(id){
+    let {data} = await service.get(`goods/${id}`)
+    return data
+}
+// 编辑商品
+export async function editGoods(params){
+    let {data} = await service({
+        method:'put',
+        url:`goods/${params.goods_id}`,
+        data:{
+            "goods_cat":params.goods_cat,
+            "goods_name":params.goods_name,
+            "goods_price":params.goods_price,
+            "goods_number":params.goods_number,
+            "goods_weight":params.goods_weight,
+            "goods_introduce":params.goods_introduce,
+            "pics":params.pics,
+            "attrs":params.attrs
+          }
+    })
+    console.log(data);
+    return data
+}
+// 获取订单列表
+export async function getOrders(params){
+    let {data} = await service.get(`orders`,{params:params})
+    return data
+}
+// 查看物流信息
+export async function getKuaidi(params){
+    let {data} = await service.get(`/kuaidi/804909574412544580`)
+    console.log(data);
+    return data
+}
+
