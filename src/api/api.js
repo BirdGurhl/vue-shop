@@ -67,6 +67,7 @@ export async function getRoleList() {
 
 // 添加角色
 export async function addRole(roleInfo) {
+    console.log(roleInfo);
     let { data } = await service.post(`roles`, roleInfo)
     return data
 }

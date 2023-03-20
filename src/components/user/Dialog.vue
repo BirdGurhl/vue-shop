@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { checkEmail, checkPhone, checkName, checkPassword, checkroleName, checkroleDesc,checkcat_name} from '@/utils/reg'
+import { checkEmail, checkPhone, checkName, checkPassword, checkroleName, checkroleDesc, checkcat_name } from '@/utils/reg'
 import { getRoleList } from '@/api/api'
 export default {
   name: 'Dialog',
@@ -50,7 +50,7 @@ export default {
         mobile: checkPhone,
         roleName: checkroleName,
         roleDesc: checkroleDesc,
-        cat_name:checkcat_name
+        cat_name: checkcat_name
       },
       roleList: [],
       rid: ''
@@ -77,7 +77,10 @@ export default {
   },
 
   created() {
-    this.getRoleList()
+    if (this.formData.hasOwnProperty('role_id')) {
+      this.getRoleList()
+
+    }
   },
   methods: {
     async getRoleList() {

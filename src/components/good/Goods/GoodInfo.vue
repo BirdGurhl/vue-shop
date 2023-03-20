@@ -232,13 +232,12 @@ export default {
         },
         // 上传图片移除
         handleRemove(file, fileList) {
-            let path = file.response.data.tmp_path
+            let path = file.response ? file.response.data.tmp_path : file.url
             this.addForm.pics.splice(this.addForm.pics.indexOf(path), 1)
-            console.log(this.addForm);
         },
         // 上传图片预览
         handlePreview(file) {
-            this.priviewPath = file.response.data.url
+            this.priviewPath = file.response ? file.response.data.url : file.url
             this.dialogVisible = true
         },
         handleChange() {

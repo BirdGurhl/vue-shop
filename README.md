@@ -1,5 +1,9 @@
 # vue-shop
 
+### 项目技术栈
+```
+​ Vue2 + Element UI + Vue-Router + Axios + ES6 + Css 等
+```
 ### 项目运行环境
 ```
 ​ Node.js + MySQL
@@ -42,8 +46,6 @@ npm run serve
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+### 部分运行截图
+
 

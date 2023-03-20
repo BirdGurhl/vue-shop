@@ -10,7 +10,7 @@
     <!-- 表格数据 -->
     <el-card>
       <div slot="header" class="addBtn">
-        <el-button type="primary" size="small" @click="DialogVisible = true">添加角色</el-button>
+        <el-button type="primary" size="small" @click="addDialogVisible = true">添加角色</el-button>
       </div>
       <el-table :data="roleList" style="width: 100%" border stripe>
         <el-table-column type="expand">
@@ -54,7 +54,7 @@
     </el-card>
     <!-- 表格数据end -->
     <!-- 添加角色弹出框 -->
-    <Dialog :title="'添加角色'" :dialogVisibleModel.sync="DialogVisible" :formDataModel.sync="roleInfo" :callback="addRole">
+    <Dialog :title="'添加角色'" :dialogVisibleModel.sync="addDialogVisible" :formDataModel.sync="addRoleInfo" :callback="addRole">
     </Dialog>
     <!-- 添加角色弹出框 -->
     <!-- 编辑角色信息弹出框 -->
@@ -94,8 +94,13 @@ export default {
         roleName: '',
         roleDesc: ''
       },
+      addRoleInfo: {
+        roleName: '',
+        roleDesc: ''
+      },
       DialogVisible: false,
       roleRightSDialogVisible: false,
+      addDialogVisible: false,
       title: '',
     }
   },
@@ -198,11 +203,13 @@ export default {
       this.getRoleList()
     },
     async addRole() {
-      const res = await addRole(this.roleInfo)
+      console.log(this.addRoleInfo);
+      const res = await addRole(this.addRoleInfo)
       console.log(res);
       if (res.meta.status != 201) {
         return
       }
+      console.log(res);
       this.$message.success('添加成功')
       this.getRoleList()
     },

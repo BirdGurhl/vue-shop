@@ -1,5 +1,5 @@
 <template>
-  <div class='Goods'>
+  <div class='Goods' style="height: 100%;">
     <!-- 导航 -->
     <el-breadcrumb>
       <el-breadcrumb-item :to="{ path: '/home' }">首页</el-breadcrumb-item>
@@ -13,7 +13,7 @@
     <el-row :gutter="20">
       <el-col :span="10">
         <el-autocomplete class="inline-input" v-model="inputVal" value-key="goods_name" :fetch-suggestions="querySearch"
-          placeholder="请输入内容" @select="getGoodsList(inputVal)">
+          placeholder="请输入内容" @select="getGoodsList(inputVal)" @keyup.enter.native="getGoodsList(inputVal)">
           <el-button slot="append" icon="el-icon-search" @click="getGoodsList(inputVal)"></el-button>
         </el-autocomplete>
       </el-col>
@@ -28,7 +28,7 @@
     <!-- 头部搜索end -->
 
     <!-- 表格数据 -->
-    <el-table :data="goodList" border stripe :row-class-name="tableRowClassName" row-key="goods_id">
+    <el-table :data="goodList" border stripe :row-class-name="tableRowClassName" row-key="goods_id" height="90%">
       <el-table-column type="index" label="#" fixed="left"></el-table-column>
       <el-table-column prop="goods_name" label="商品名称" show-overflow-tooltip></el-table-column>
       <el-table-column prop="goods_price" label="商品价格(元)"></el-table-column>
@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { getGoods, delGoods,getGoodsByID } from '@/api/api'
+import { getGoods, delGoods, getGoodsByID } from '@/api/api'
 export default {
   name: 'Goods',
   data() {
@@ -100,7 +100,7 @@ export default {
   methods: {
     addUserBtn() {
       this.$router.push('/goodinfo')
-     },
+    },
     async editGoodBtn(row) {
       console.log(row);
       // 获取需要编辑商品的完整信息
@@ -110,9 +110,9 @@ export default {
       }
       console.log(res);
       this.$router.push({
-        name:'goodinfo',
-        query:{
-          goodInfo:JSON.stringify(res.data)
+        name: 'goodinfo',
+        query: {
+          goodInfo: JSON.stringify(res.data)
         }
       })
     },
@@ -169,7 +169,12 @@ export default {
       cb(results);
     },
     async getGoodsList(inputVal) {
-      this.queryInfo.query = inputVal || ''
+      if (inputVal) {
+        this.queryInfo.query = inputVal
+        this.queryInfo.pagenum = 1
+      } else {
+        this.queryInfo.query = ''
+      }
       const res = await getGoods(this.queryInfo)
       if (res.meta.status != 200) return
       this.goodList = res.data.goods
@@ -180,8 +185,9 @@ export default {
 </script>
 <style lang='less' scoped>
 .el-autocomplete {
-    width: 100%;
+  width: 100%;
 }
+
 .el-breadcrumb {
   margin-bottom: 15px;
 }

@@ -12,7 +12,7 @@
     <!-- 头部搜索 -->
     <el-row :gutter="20">
       <el-col :span="10">
-        <el-input placeholder="请输入内容" v-model="inputVal" @keyup.enter.native="getUsersList" clearable>
+        <el-input placeholder="请输入内容" v-model="inputVal" @keyup.enter.native="getUsersList(inputVal)" clearable>
           <el-button slot="append" icon="el-icon-search" @click="getUsersList(inputVal)"></el-button>
         </el-input>
       </el-col>
@@ -168,7 +168,7 @@ export default {
         email: '',
         mobile: '',
       },
-      addDialogVisible = true
+      this.addDialogVisible = true
     },
     async addUser() {
       const res = await addUser(this.UserInfo)
@@ -206,7 +206,12 @@ export default {
     },
     async getUsersList(inputVal) {
       // const { data: res } = await this.$http.get('users', { params: this.queryInfo })
-      this.queryInfo.query = inputVal || ''
+      if (inputVal) {
+        this.queryInfo.query = inputVal
+        this.queryInfo.pagenum = 1
+      }else{
+        this.queryInfo.query = ''
+      }
       const res = await getUsersList(this.queryInfo)
       if (res.meta.status != 200) {
         return this.$message.error('获取用户列表失败')
