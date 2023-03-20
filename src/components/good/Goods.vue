@@ -28,7 +28,7 @@
     <!-- 头部搜索end -->
 
     <!-- 表格数据 -->
-    <el-table :data="goodList" border stripe :row-class-name="tableRowClassName" row-key="goods_id" height="90%">
+    <el-table :data="goodList" border stripe :row-class-name="tableRowClassName" row-key="goods_id" height="80%">
       <el-table-column type="index" label="#" fixed="left"></el-table-column>
       <el-table-column prop="goods_name" label="商品名称" show-overflow-tooltip></el-table-column>
       <el-table-column prop="goods_price" label="商品价格(元)"></el-table-column>

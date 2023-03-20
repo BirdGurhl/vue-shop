@@ -47,16 +47,14 @@ npm run build
 ```
 
 ### 部分功能运行演示（图片体积较大请稍候片刻...）
-```
+
 角色列表：
 <img src="https://github.com/BirdGurhl/vue-shop/blob/master/%E6%88%AA%E5%9B%BE/%E8%A7%92%E8%89%B2%E5%88%97%E8%A1%A8.gif" alt="角色列表" width="500px">
-```
-```
+
 商品列表：
 <img src="https://github.com/BirdGurhl/vue-shop/blob/master/%E6%88%AA%E5%9B%BE/%E5%95%86%E5%93%81%E5%88%97%E8%A1%A8.gif" alt="商品列表" width="500px">
-```
-```
-分类参数
+
+分类参数：
 <img src="https://github.com/BirdGurhl/vue-shop/blob/master/%E6%88%AA%E5%9B%BE/%E5%88%86%E7%B1%BB%E5%8F%82%E6%95%B0.gif" alt="分类参数" width="500px">
-```
+
 
